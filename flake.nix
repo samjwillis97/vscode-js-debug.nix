@@ -21,13 +21,15 @@
     pkgs = import nixpkgs {
       inherit system;
     };
+
+    pythonEnv = pkgs.python3.withPackages (ps: with ps; [semver]);
   in {
     apps.${system}.update-sources = flake-utils.lib.mkApp {
-      drv = pkgs.callPackage ./scripts/update-sources {};
+      drv = pkgs.callPackage ./scripts/update-sources {inherit pythonEnv;};
     };
 
     devShells.${system}.default = pkgs.mkShell {
-      buildInputs = with pkgs; [niv ruff-lsp];
+      buildInputs = with pkgs; [niv pythonEnv ruff-lsp];
     };
 
     packages.${system} = let
